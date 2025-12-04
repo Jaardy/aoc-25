@@ -91,6 +91,33 @@ async function saveExample(day, dir, $, force = false) {
   }
 }
 
+function createStarterFiles(dir) {
+  const starterTemplate = `// @ts-nocheck
+const fs = require('fs');
+const path = require('path');
+
+// Read the input files
+const example = fs.readFileSync(path.join(__dirname, './example.txt'), 'utf8');
+const input = fs.readFileSync(path.join(__dirname, './input.txt'), 'utf8');
+
+// --- Solution ---
+
+
+
+// --- Tests ---
+`;
+
+  for (const part of ['part-1.js', 'part-2.js']) {
+    const filePath = path.join(dir, part);
+    if (fs.existsSync(filePath)) {
+      console.log(`${part} already exists. Skipping.`);
+    } else {
+      fs.writeFileSync(filePath, starterTemplate);
+      console.log(`Created ${filePath}`);
+    }
+  }
+}
+
 /**
  * Main function to fetch all assets for a given day.
  */
@@ -113,6 +140,9 @@ async function main() {
 
     const dayDir = path.join(__dirname, `day-${day}`);
     ensureDirExists(dayDir);
+
+    // Create starter JS files
+    createStarterFiles(dayDir);
 
     // Fetch and save the puzzle input (never forced)
     await saveInput(day, dayDir);
